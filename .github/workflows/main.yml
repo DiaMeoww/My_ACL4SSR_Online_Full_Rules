@@ -17,7 +17,8 @@ jobs:
       
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        # 将 v4 升级到 v5 喵！通常新版本会原生匹配更高的 Node.js 运行时
+        uses: actions/checkout@v5
 
       - name: Download Remote Rule
         run: |
