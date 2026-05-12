@@ -25,8 +25,8 @@ jobs:
 
       - name: Merge Rules
         run: |
-          touch my_custom.ini
-          cat my_custom.ini > merged_config.ini
+          touch my_rules.ini
+          cat my_rules.ini > merged_config.ini
           echo -e "\n" >> merged_config.ini
           cat acl4ssr.ini >> merged_config.ini
 
@@ -34,16 +34,10 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
-          
-          # 关键点：我们先从远程拉取最新的更改，防止机器人把文件覆盖掉
-          git pull origin main
-          
-          # 将这两个文件都显式地加入暂存区
-          git add my_custom.ini merged_config.ini
-          
+          git add merged_config.ini
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update rules and sync custom file $(date +'%Y-%m-%d %H:%M')"
-            git push origin HEAD:main
+            git commit -m "Update merged rules $(date +'%Y-%m-%d %H:%M')"
+            git push
           fi
