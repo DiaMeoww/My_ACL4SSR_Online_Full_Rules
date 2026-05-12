@@ -2,15 +2,18 @@ name: Sync and Merge Rules
 
 on:
   schedule:
-    - cron: '0 20 * * *' # 每天北京时间早上4点自动运行
-  workflow_dispatch:      # 允许手动触发执行
+    - cron: '0 22 * * *' 
+  workflow_dispatch: 
 
 jobs:
   merge:
     runs-on: ubuntu-latest
+    permissions: # 显式声明权限，防止机器人没权改代码
+      contents: write
+      
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # 升级到 v4，解决 Node.js 警告
 
       - name: Download Remote Rule
         run: |
@@ -18,7 +21,9 @@ jobs:
 
       - name: Merge Rules
         run: |
-          # 创建最终文件，先放主人的自定义规则，再放原始规则
+          # 确保 my_custom.ini 存在，不存在就创个空的防止报错
+          touch my_custom.ini
+          # 合并文件：自定义在前，原始在后
           cat my_custom.ini > merged_config.ini
           echo -e "\n" >> merged_config.ini
           cat acl4ssr.ini >> merged_config.ini
@@ -28,5 +33,10 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
           git add merged_config.ini
-          git commit -m "Update merged rules" || exit 0
-          git push
+          # 只有当文件真的有变化时才 commit，防止因为“没东西可更”而报错
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update merged rules $(date +'%Y-%m-%d %H:%M')"
+            git push
+          fi
