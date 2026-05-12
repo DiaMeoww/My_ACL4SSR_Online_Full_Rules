@@ -1,0 +1,32 @@
+name: Sync and Merge Rules
+
+on:
+  schedule:
+    - cron: '0 20 * * *' # 每天北京时间早上4点自动运行
+  workflow_dispatch:      # 允许手动触发执行
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download Remote Rule
+        run: |
+          curl -sSL "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini" -o acl4ssr.ini
+
+      - name: Merge Rules
+        run: |
+          # 创建最终文件，先放主人的自定义规则，再放原始规则
+          cat my_custom.ini > merged_config.ini
+          echo -e "\n" >> merged_config.ini
+          cat acl4ssr.ini >> merged_config.ini
+
+      - name: Git Push
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Action"
+          git add merged_config.ini
+          git commit -m "Update merged rules" || exit 0
+          git push
