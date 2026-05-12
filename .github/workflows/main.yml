@@ -34,10 +34,16 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
-          git add merged_config.ini
+          
+          # 关键点：我们先从远程拉取最新的更改，防止机器人把文件覆盖掉
+          git pull origin main
+          
+          # 将这两个文件都显式地加入暂存区
+          git add my_custom.ini merged_config.ini
+          
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update merged rules $(date +'%Y-%m-%d %H:%M')"
-            git push
+            git commit -m "Update rules and sync custom file $(date +'%Y-%m-%d %H:%M')"
+            git push origin HEAD:main
           fi
