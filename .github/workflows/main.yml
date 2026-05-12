@@ -27,20 +27,21 @@ jobs:
 
       - name: Simple Merge Rules
         run: |
-          # 创建唯一的 [custom] 头部
-          echo "[custom]" > merged_config.ini
-          echo "; --- 主人的自定义规则区 ---" >> merged_config.ini
-          echo "" >> merged_config.ini
-          
-          # 倒入主人的规则（去掉可能重复的 [custom]）
+          # 1. 直接把主人的 my_rules.ini 作为基础文件（保留所有 [rule] [custom] 标签）
           if [ -f "my_rules.ini" ]; then
-            sed '/^\[custom\]/d' my_rules.ini >> merged_config.ini
+            cat my_rules.ini > merged_config.ini
+            echo -e "\n" >> merged_config.ini
+          else
+            touch merged_config.ini
           fi
           
-          echo -e "\n; --- 原始 ACL4SSR 规则区 ---" >> merged_config.ini
-          
-          # 倒入下载的规则（去掉它的 [custom]）
-          sed '/^\[custom\]/d' acl4ssr.ini >> merged_config.ini
+          # 2. 拼接原始 ACL4SSR 规则区
+          echo "; --- 原始 ACL4SSR 规则区 ---" >> merged_config.ini
+          if [ -f "acl4ssr.ini" ]; then
+            # 直接追加，不使用 sed 删除标签，让文件原有的 [custom] 起作用
+            cat acl4ssr.ini >> merged_config.ini
+          fi
+
 
       - name: Git Push
         run: |
