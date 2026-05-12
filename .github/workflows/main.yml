@@ -5,7 +5,6 @@ on:
     - cron: '0 20 * * *' 
   workflow_dispatch: 
 
-# 加入这个全局环境变量，提前拥抱 Node.js 24 喵！
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
@@ -17,19 +16,29 @@ jobs:
       
     steps:
       - name: Checkout repository
-        # 将 v4 升级到 v5 喵！通常新版本会原生匹配更高的 Node.js 运行时
         uses: actions/checkout@v5
 
       - name: Download Remote Rule
         run: |
+          # 下载原始的 ACL4SSR 配置文件喵
           curl -sSL "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini" -o acl4ssr.ini
 
-      - name: Merge Rules
+      - name: Simple Merge Rules
         run: |
-          touch my_rules.ini
-          cat my_rules.ini > merged_config.ini
-          echo -e "\n" >> merged_config.ini
-          cat acl4ssr.ini >> merged_config.ini
+          # 1. 创建合并文件，先写好唯一的 [custom] 开头喵
+          echo "[custom]" > merged_config.ini
+          echo "; --- 主人的自定义规则区 ---" >> merged_config.ini
+          
+          # 2. 把主人的 my_rules.ini 内容直接倒进去
+          # 用 sed 删掉主人文件里可能存在的 [custom] 标签，防止重复喵
+          if [ -f "my_rules.ini" ]; then
+            sed '/^\[custom\]/d' my_rules.ini >> merged_config.ini
+          fi
+          
+          echo -e "\n; --- 原始 ACL4SSR 规则区 ---" >> merged_config.ini
+          
+          # 3. 把下载回来的 rules 塞进去，同样删掉它的 [custom] 标签喵
+          sed '/^\[custom\]/d' acl4ssr.ini >> merged_config.ini
 
       - name: Git Push
         run: |
@@ -39,6 +48,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update merged rules $(date +'%Y-%m-%d %H:%M')"
+            git commit -m "Update merged rules $(date +'%Y-%m-%d %H:%M') 喵~"
             git push
           fi
