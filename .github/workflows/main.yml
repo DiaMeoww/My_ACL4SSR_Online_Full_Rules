@@ -2,7 +2,7 @@ name: Sync and Merge Rules
 
 on:
   schedule:
-    - cron: '0 20 * * *' 
+    - cron: '0 0 * * *' 
   workflow_dispatch: 
   push:
     paths:
@@ -29,7 +29,7 @@ jobs:
         run: |
           # 创建唯一的 [custom] 头部
           echo "[custom]" > merged_config.ini
-          echo "; --- 主人的自定义规则区 ---/n" >> merged_config.ini
+          echo "; --- 主人的自定义规则区 ---\n" >> merged_config.ini
           
           # 倒入主人的规则（去掉可能重复的 [custom]）
           if [ -f "my_rules.ini" ]; then
