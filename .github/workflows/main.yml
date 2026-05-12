@@ -30,7 +30,7 @@ jobs:
           # 1. 直接把主人的 my_rules.ini 作为基础文件（保留所有 [rule] [custom] 标签）
           if [ -f "my_rules.ini" ]; then
             cat my_rules.ini > merged_config.ini
-            # echo -e "\n" >> merged_config.ini
+            echo -e "" >> merged_config.ini
           else
             touch merged_config.ini
           fi
