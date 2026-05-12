@@ -38,7 +38,6 @@ jobs:
           # 2. 拼接原始 ACL4SSR 规则区
           echo "; --- 原始 ACL4SSR 规则区 ---" >> merged_config.ini
           if [ -f "acl4ssr.ini" ]; then
-            # 直接追加，不使用 sed 删除标签，让文件原有的 [custom] 起作用
             cat acl4ssr.ini >> merged_config.ini
           fi
 
