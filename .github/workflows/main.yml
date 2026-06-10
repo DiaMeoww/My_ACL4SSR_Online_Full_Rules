@@ -47,7 +47,7 @@ jobs:
           telegram_anchor = "custom_proxy_group=📲 电报消息`select`"
           twitter_group = "custom_proxy_group=📄 Twitter`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
           crypto_group = "custom_proxy_group=🐕 交易平台`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
-          auto_anchor = "custom_proxy_group=♻️ 自动选择`url-test`"
+          ai_anchor = "custom_proxy_group=💬 Ai平台`select`"
           chugang_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
           netflix_anchor = "custom_proxy_group=🎥 奈飞视频`select`"
           emby_group = "custom_proxy_group=🎬 Emby`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
@@ -64,7 +64,7 @@ jobs:
                       out.write(twitter_group + "\n")
                       out.write(crypto_group + "\n")
                       inserted_twitter = True
-                  if not inserted_chugang and line.startswith(auto_anchor):
+                  if not inserted_chugang and line.startswith(ai_anchor):
                       if not line.endswith("\n"):
                           out.write("\n")
                       out.write(chugang_group + "\n")
@@ -79,7 +79,7 @@ jobs:
           if not inserted_twitter:
               missing.append("Telegram")
           if not inserted_chugang:
-              missing.append("Auto Select (Chugang)")
+              missing.append("Ai platform")
           if not inserted_emby:
               missing.append("Netflix")
           if missing:
