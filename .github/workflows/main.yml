@@ -46,13 +46,14 @@ jobs:
           target = Path("merged_config.ini")
           telegram_anchor = "custom_proxy_group=📲 电报消息`select`"
           twitter_group = "custom_proxy_group=📄 Twitter`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
-          ai_anchor = "custom_proxy_group=💬 Ai平台`select`"
-          ai_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇸🇬 狮城节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
-          bilibili_anchor = "custom_proxy_group=📺 哔哩哔哩`select`"
-          emby_group = "custom_proxy_group=🎬 Emby`select`[]DIRECT`[]🚀 节点选择`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇸🇬 狮城节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换"
+          crypto_group = "custom_proxy_group=🐕 交易平台`select`[]🚀 节点选择`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇸🇬 狮城节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
+          auto_anchor = "custom_proxy_group=♻️ 自动选择`url-test`"
+          chugang_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇸🇬 狮城节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
+          netflix_anchor = "custom_proxy_group=🎥 奈飞视频`select`"
+          emby_group = "custom_proxy_group=🎬 Emby`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇸🇬 狮城节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
 
           inserted_twitter = False
-          inserted_ai = False
+          inserted_chugang = False
           inserted_emby = False
           with source.open("r", encoding="utf-8") as src, target.open("a", encoding="utf-8", newline="\n") as out:
               for line in src:
@@ -61,13 +62,14 @@ jobs:
                       if not line.endswith("\n"):
                           out.write("\n")
                       out.write(twitter_group + "\n")
+                      out.write(crypto_group + "\n")
                       inserted_twitter = True
-                  if not inserted_ai and line.startswith(ai_anchor):
+                  if not inserted_chugang and line.startswith(auto_anchor):
                       if not line.endswith("\n"):
                           out.write("\n")
-                      out.write(ai_group + "\n")
-                      inserted_ai = True
-                  if not inserted_emby and line.startswith(bilibili_anchor):
+                      out.write(chugang_group + "\n")
+                      inserted_chugang = True
+                  if not inserted_emby and line.startswith(netflix_anchor):
                       if not line.endswith("\n"):
                           out.write("\n")
                       out.write(emby_group + "\n")
@@ -76,10 +78,10 @@ jobs:
           missing = []
           if not inserted_twitter:
               missing.append("Telegram")
-          if not inserted_ai:
-              missing.append("Ai platform")
+          if not inserted_chugang:
+              missing.append("Auto Select (Chugang)")
           if not inserted_emby:
-              missing.append("Bilibili")
+              missing.append("Netflix")
           if missing:
               raise SystemExit("Custom proxy group anchor was not found: " + ", ".join(missing))
           PY
