@@ -46,7 +46,7 @@ jobs:
           target = Path("merged_config.ini")
           telegram_anchor = "custom_proxy_group=📲 电报消息`select`"
           twitter_group = "custom_proxy_group=📄 Twitter`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
-          crypto_group = "custom_proxy_group=🐕 交易平台`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
+          crypto_group = "custom_proxy_group=🐶 交易平台`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
           ai_anchor = "custom_proxy_group=💬 Ai平台`select`"
           chugang_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
           netflix_anchor = "custom_proxy_group=🎥 奈飞视频`select`"
