@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - 'my_rules.ini'
+      - '.github/workflows/main.yml'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
@@ -35,10 +36,30 @@ jobs:
             touch merged_config.ini
           fi
           
-          # 2. 拼接原始 ACL4SSR 规则区
+          # 2. 拼接原始 ACL4SSR 规则区，并在 Ai 平台分组下方插入自定义分组
           echo "; --- 原始 ACL4SSR 规则区 ---" >> merged_config.ini
           if [ -f "acl4ssr.ini" ]; then
-            cat acl4ssr.ini >> merged_config.ini
+            python3 - <<'PY'
+from pathlib import Path
+
+source = Path("acl4ssr.ini")
+target = Path("merged_config.ini")
+anchor = "custom_proxy_group=💬 Ai平台`select`"
+extra_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇸🇬 狮城节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
+
+inserted = False
+with source.open("r", encoding="utf-8") as src, target.open("a", encoding="utf-8", newline="\n") as out:
+    for line in src:
+        out.write(line)
+        if not inserted and line.startswith(anchor):
+            if not line.endswith("\n"):
+                out.write("\n")
+            out.write(extra_group + "\n")
+            inserted = True
+
+if not inserted:
+    raise SystemExit("Ai platform custom_proxy_group anchor was not found.")
+PY
           fi
 
 
