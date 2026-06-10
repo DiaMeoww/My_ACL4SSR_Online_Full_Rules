@@ -49,7 +49,7 @@ jobs:
           ai_anchor = "custom_proxy_group=💬 Ai平台`select`"
           ai_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇸🇬 狮城节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
           bilibili_anchor = "custom_proxy_group=📺 哔哩哔哩`select`"
-          emby_group = "custom_proxy_group=🎬 Emby`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇸🇬 狮城节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
+          emby_group = "custom_proxy_group=🎬 Emby`select`[]DIRECT`[]🚀 节点选择`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇸🇬 狮城节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换"
 
           inserted_twitter = False
           inserted_ai = False
