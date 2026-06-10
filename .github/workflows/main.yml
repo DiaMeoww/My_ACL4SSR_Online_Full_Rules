@@ -36,7 +36,7 @@ jobs:
             touch merged_config.ini
           fi
           
-          # 2. 拼接原始 ACL4SSR 规则区，并在 Ai 平台分组下方插入自定义分组
+          # 2. 拼接原始 ACL4SSR 规则区，并插入自定义分组
           echo "; --- 原始 ACL4SSR 规则区 ---" >> merged_config.ini
           if [ -f "acl4ssr.ini" ]; then
             python3 - <<'PY'
@@ -44,21 +44,34 @@ jobs:
 
           source = Path("acl4ssr.ini")
           target = Path("merged_config.ini")
-          anchor = "custom_proxy_group=💬 Ai平台`select`"
-          extra_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇸🇬 狮城节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
+          ai_anchor = "custom_proxy_group=💬 Ai平台`select`"
+          ai_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇸🇬 狮城节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
+          bilibili_anchor = "custom_proxy_group=📺 哔哩哔哩`select`"
+          emby_group = "custom_proxy_group=🎬 Emby`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇸🇬 狮城节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
 
-          inserted = False
+          inserted_ai = False
+          inserted_emby = False
           with source.open("r", encoding="utf-8") as src, target.open("a", encoding="utf-8", newline="\n") as out:
               for line in src:
                   out.write(line)
-                  if not inserted and line.startswith(anchor):
+                  if not inserted_ai and line.startswith(ai_anchor):
                       if not line.endswith("\n"):
                           out.write("\n")
-                      out.write(extra_group + "\n")
-                      inserted = True
+                      out.write(ai_group + "\n")
+                      inserted_ai = True
+                  if not inserted_emby and line.startswith(bilibili_anchor):
+                      if not line.endswith("\n"):
+                          out.write("\n")
+                      out.write(emby_group + "\n")
+                      inserted_emby = True
 
-          if not inserted:
-              raise SystemExit("Ai platform custom_proxy_group anchor was not found.")
+          missing = []
+          if not inserted_ai:
+              missing.append("Ai platform")
+          if not inserted_emby:
+              missing.append("Bilibili")
+          if missing:
+              raise SystemExit("Custom proxy group anchor was not found: " + ", ".join(missing))
           PY
           fi
 
