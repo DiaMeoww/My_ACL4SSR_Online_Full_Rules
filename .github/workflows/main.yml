@@ -24,7 +24,7 @@ jobs:
 
       - name: Download Remote Rule
         run: |
-          curl -sSL "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini" -o acl4ssr.ini
+          curl -fsSL "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini" -o acl4ssr.ini
 
       - name: Simple Merge Rules
         run: |
@@ -44,44 +44,46 @@ jobs:
 
           source = Path("acl4ssr.ini")
           target = Path("merged_config.ini")
-          telegram_anchor = "custom_proxy_group=📲 电报消息`select`"
-          twitter_group = "custom_proxy_group=📄 Twitter`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
-          crypto_group = "custom_proxy_group=⚡️ 交易平台`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
-          ai_anchor = "custom_proxy_group=💬 Ai平台`select`"
-          chugang_group = "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
-          netflix_anchor = "custom_proxy_group=🎥 奈飞视频`select`"
-          emby_group = "custom_proxy_group=🎬 Emby`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT"
+          insertions = [
+              {
+                  "label": "Telegram",
+                  "anchor": "custom_proxy_group=📲 电报消息`select`",
+                  "groups": [
+                      "custom_proxy_group=📄 Twitter`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
+                      "custom_proxy_group=⚡️ 交易平台`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
+                  ],
+              },
+              {
+                  "label": "Ai platform",
+                  "anchor": "custom_proxy_group=💬 Ai平台`select`",
+                  "groups": [
+                      "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
+                  ],
+              },
+              {
+                  "label": "Netflix",
+                  "anchor": "custom_proxy_group=🎥 奈飞视频`select`",
+                  "groups": [
+                      "custom_proxy_group=🎬 Emby`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
+                  ],
+              },
+          ]
+          inserted = {item["label"]: False for item in insertions}
 
-          inserted_twitter = False
-          inserted_chugang = False
-          inserted_emby = False
           with source.open("r", encoding="utf-8") as src, target.open("a", encoding="utf-8", newline="\n") as out:
               for line in src:
                   out.write(line)
-                  if not inserted_twitter and line.startswith(telegram_anchor):
+                  for item in insertions:
+                      label = item["label"]
+                      if inserted[label] or not line.startswith(item["anchor"]):
+                          continue
                       if not line.endswith("\n"):
                           out.write("\n")
-                      out.write(twitter_group + "\n")
-                      out.write(crypto_group + "\n")
-                      inserted_twitter = True
-                  if not inserted_chugang and line.startswith(ai_anchor):
-                      if not line.endswith("\n"):
-                          out.write("\n")
-                      out.write(chugang_group + "\n")
-                      inserted_chugang = True
-                  if not inserted_emby and line.startswith(netflix_anchor):
-                      if not line.endswith("\n"):
-                          out.write("\n")
-                      out.write(emby_group + "\n")
-                      inserted_emby = True
+                      for group in item["groups"]:
+                          out.write(group + "\n")
+                      inserted[label] = True
 
-          missing = []
-          if not inserted_twitter:
-              missing.append("Telegram")
-          if not inserted_chugang:
-              missing.append("Ai platform")
-          if not inserted_emby:
-              missing.append("Netflix")
+          missing = [label for label, was_inserted in inserted.items() if not was_inserted]
           if missing:
               raise SystemExit("Custom proxy group anchor was not found: " + ", ".join(missing))
           PY
