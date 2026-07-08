@@ -49,7 +49,7 @@ jobs:
                   "label": "Google Ruleset",
                   "anchor": "ruleset=💬 Ai平台,https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/OpenAi.list",
                   "groups": [
-                      "ruleset=🔍 Google,https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Google.list",
+                      "ruleset=🔍 Google,https://yfamilys.com/rule/Google.list",
                   ],
               },
               {
