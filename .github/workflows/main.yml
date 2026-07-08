@@ -47,7 +47,7 @@ jobs:
           insertions = [
               {
                   "label": "Google Ruleset",
-                  "anchor": "ruleset=🍃 应用净化,",
+                  "anchor": "ruleset=💬 Ai平台,https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/OpenAi.list",
                   "groups": [
                       "ruleset=🔍 Google,https://yfamilys.com/rule/Google.list",
                   ],
