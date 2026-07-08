@@ -55,6 +55,13 @@ jobs:
                   ],
               },
               {
+                  "label": "Google",
+                  "anchor": "custom_proxy_group=💬 Ai平台`select`",
+                  "groups": [
+                      "custom_proxy_group=🔍 Google`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
+                  ],
+              },
+              {
                   "label": "Netflix",
                   "anchor": "custom_proxy_group=🎥 奈飞视频`select`",
                   "groups": [
