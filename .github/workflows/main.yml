@@ -47,8 +47,7 @@ jobs:
           insertions = [
               {
                   "label": "Google Ruleset",
-                  "anchor": "ruleset=📢 谷歌FCM,",
-                  "insert_before": True,
+                  "anchor": "ruleset=🍃 应用净化,",
                   "groups": [
                       "ruleset=🔍 Google,https://yfamilys.com/rule/Google.list",
                   ],
@@ -59,7 +58,7 @@ jobs:
                   "groups": [
                       "custom_proxy_group=📄 Twitter`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
                       "custom_proxy_group=⚡️ 交易平台`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
-                      "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
+                      "custom_proxy_group=👾 除港国际`select`[]🚀 节点选择`[]♻️ 自动选择`[]🇸🇬 狮城节点`[]🇭🇰 香港节点`[]🇨🇳 台湾节点`[]🇯🇵 日本节点`[]🇺🇲 美国节点`[]🇰🇷 韩国节点`[]🚀 手动切换`[]DIRECT",
                   ],
               },
               {
@@ -81,22 +80,9 @@ jobs:
 
           with source.open("r", encoding="utf-8") as src, target.open("a", encoding="utf-8", newline="\n") as out:
               for line in src:
-                  for item in insertions:
-                      label = item["label"]
-                      if not item.get("insert_before", False):
-                          continue
-                      if inserted[label] or not line.startswith(item["anchor"]):
-                          continue
-                      for group in item["groups"]:
-                          out.write(group + "\n")
-                      inserted[label] = True
-
                   out.write(line)
-
                   for item in insertions:
                       label = item["label"]
-                      if item.get("insert_before", False):
-                          continue
                       if inserted[label] or not line.startswith(item["anchor"]):
                           continue
                       if not line.endswith("\n"):
