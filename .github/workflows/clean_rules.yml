@@ -113,24 +113,29 @@ jobs:
                   "",
                   "HOST-KEYWORD,microsoft,Microsoft",
                   "HOST-KEYWORD,windows,Microsoft",
-                  "HOST-KEYWORD,office,Microsoft",
+                  "HOST-SUFFIX,office.com,Microsoft",
+                  "HOST-SUFFIX,office.net,Microsoft",
                   "HOST-KEYWORD,outlook,Microsoft",
-                  "HOST-KEYWORD,bing,Microsoft",
+                  "HOST-SUFFIX,bing.com,Microsoft",
+                  "HOST-SUFFIX,bing.net,Microsoft",
+                  "HOST-SUFFIX,bing.com.cn,Microsoft",
                   "HOST-KEYWORD,xbox,Microsoft",
                   "HOST-KEYWORD,skype,Microsoft",
                   "HOST-KEYWORD,azure,Microsoft",
                   "HOST-KEYWORD,visualstudio,Microsoft",
                   "HOST-KEYWORD,onedrive,Microsoft",
                   "HOST-KEYWORD,hotmail,Microsoft",
-                  "HOST-KEYWORD,live,Microsoft",
+                  "HOST-SUFFIX,live.com,Microsoft",
+                  "HOST-SUFFIX,live.net,Microsoft",
+                  "HOST-SUFFIX,live.cn,Microsoft",
                   "HOST-KEYWORD,21vbluecloud,Microsoft",
                   "HOST-SUFFIX,msn.com,Microsoft",
                   "HOST-SUFFIX,msn.cn,Microsoft",
                   "HOST-SUFFIX,msn.net,Microsoft",
                   "HOST-SUFFIX,ms,Microsoft"
               ]
-              ms_keywords = ["microsoft", "windows", "office", "outlook", "bing", "xbox", "skype", "azure", "visualstudio", "onedrive", "hotmail", "live", "21vbluecloud"]
-              ms_suffixes = ["msn.com", "msn.cn", "msn.net"]
+              ms_keywords = ["microsoft", "windows", "outlook", "xbox", "skype", "azure", "visualstudio", "onedrive", "hotmail", "21vbluecloud"]
+              ms_suffixes = ["msn.com", "msn.cn", "msn.net", "office.com", "office.net", "bing.com", "bing.net", "bing.com.cn", "live.com", "live.net", "live.cn"]
               seen = set(ms_keywords + ms_suffixes + ["ms"])
               
               for line in ms_raw.splitlines():
