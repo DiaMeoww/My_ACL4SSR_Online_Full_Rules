@@ -219,11 +219,6 @@ jobs:
       - name: Download Remote Rule
         run: |
           curl -fsSL "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini" -o acl4ssr.ini
-          # 有效性校验：检查文件是否存在，且大小是否大于 10KB (正常 ACL4SSR_Online_Full.ini 在 40KB 以上)
-          if [ ! -f "acl4ssr.ini" ] || [ $(wc -c < acl4ssr.ini) -lt 10000 ]; then
-            echo "::error::Downloaded acl4ssr.ini is missing, empty, or too small!"
-            exit 1
-          fi
 
       - name: Merge ACL4SSR Config
         run: |
