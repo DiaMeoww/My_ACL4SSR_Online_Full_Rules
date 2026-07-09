@@ -19,13 +19,17 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Fetch, Compare and Clean Google Rules
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
           python3 - <<'PY'
           import urllib.request
           from pathlib import Path
+          import os
 
           url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/QuantumultX/Google/Google.list"
           youtube_keywords = ["youtube", "googlevideo", "ytimg", "ggpht", "youtube-nocookie"]
+          event_name = os.environ.get("GITHUB_EVENT_NAME", "manual")
           
           # 1. 确保目标目录存在
           Path("rules/BlackMatrix7").mkdir(parents=True, exist_ok=True)
@@ -42,7 +46,7 @@ jobs:
 
           # 3. 对比原版是否变动
           upstream_path = Path("rules/BlackMatrix7/Google.list")
-          if upstream_path.exists():
+          if event_name == "schedule" and upstream_path.exists():
               old_content = upstream_path.read_text(encoding="utf-8")
               if old_content.strip() == raw_content.strip():
                   print("No changes in upstream BlackMatrix7 Google.list. Exiting.")
