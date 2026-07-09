@@ -37,7 +37,7 @@ jobs:
               for i in range(retries):
                   try:
                       req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-                      with urllib.request.urlopen(req) as response:
+                      with urllib.request.urlopen(req, timeout=15) as response:
                           return response.read().decode('utf-8')
                   except Exception as e:
                       print(f"Attempt {i+1} failed to fetch {url}: {e}")
@@ -51,7 +51,7 @@ jobs:
           
           # 1. 确保目标目录存在
           Path("Egern/BlackMatrix7").mkdir(parents=True, exist_ok=True)
-          Path("Egern/mini").mkdir(parents=True, exist_ok=True)
+          Path("Egern").mkdir(parents=True, exist_ok=True)
 
           # ----------------- 处理 Google -----------------
           google_url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Google/Google.list"
@@ -64,7 +64,7 @@ jobs:
               raise SystemExit(1)
 
           google_upstream = Path("Egern/BlackMatrix7/Google.list")
-          google_mini = Path("Egern/mini/Google.list")
+          google_mini = Path("Egern/Google.list")
           google_changed = True
           if event_name == "schedule" and google_upstream.exists() and google_mini.exists():
               if google_upstream.read_text(encoding="utf-8").strip() == google_raw.strip():
@@ -76,7 +76,7 @@ jobs:
               google_clean = [
                   "# NAME: Google Clean Mini",
                   "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
-                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/Egern/mini/Google.list",
+                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/Egern/Google.list",
                   "",
                   "DOMAIN-KEYWORD,google",
                   "DOMAIN-KEYWORD,gmail",
@@ -120,7 +120,7 @@ jobs:
                   if rule_entry_lower not in seen:
                       seen.add(rule_entry_lower)
                       google_clean.append(rule_entry)
-              Path("Egern/mini/Google.list").write_text("\n".join(google_clean) + "\n", encoding="utf-8")
+              Path("Egern/Google.list").write_text("\n".join(google_clean) + "\n", encoding="utf-8")
               print("Google rules updated and compiled.")
 
           # ----------------- 处理 Microsoft -----------------
@@ -133,7 +133,7 @@ jobs:
               raise SystemExit(1)
 
           ms_upstream = Path("Egern/BlackMatrix7/Microsoft.list")
-          ms_mini = Path("Egern/mini/Microsoft.list")
+          ms_mini = Path("Egern/Microsoft.list")
           ms_changed = True
           if event_name == "schedule" and ms_upstream.exists() and ms_mini.exists():
               if ms_upstream.read_text(encoding="utf-8").strip() == ms_raw.strip():
@@ -145,7 +145,7 @@ jobs:
               ms_clean = [
                   "# NAME: Microsoft Clean Mini",
                   "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
-                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/Egern/mini/Microsoft.list",
+                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/Egern/Microsoft.list",
                   "",
                   "DOMAIN-KEYWORD,microsoft",
                   "DOMAIN-KEYWORD,windows",
@@ -208,7 +208,7 @@ jobs:
                   if rule_entry_lower not in seen:
                       seen.add(rule_entry_lower)
                       ms_clean.append(rule_entry)
-              Path("Egern/mini/Microsoft.list").write_text("\n".join(ms_clean) + "\n", encoding="utf-8")
+              Path("Egern/Microsoft.list").write_text("\n".join(ms_clean) + "\n", encoding="utf-8")
               print("Microsoft rules updated and compiled.")
           
           if not google_changed and not ms_changed:
@@ -219,6 +219,11 @@ jobs:
       - name: Download Remote Rule
         run: |
           curl -fsSL "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini" -o acl4ssr.ini
+          # 有效性校验：检查文件是否存在，且大小是否大于 10KB (正常 ACL4SSR_Online_Full.ini 在 40KB 以上)
+          if [ ! -f "acl4ssr.ini" ] || [ $(wc -c < acl4ssr.ini) -lt 10000 ]; then
+            echo "::error::Downloaded acl4ssr.ini is missing, empty, or too small!"
+            exit 1
+          fi
 
       - name: Merge ACL4SSR Config
         run: |
@@ -242,10 +247,11 @@ jobs:
           insertions = [
               {
                   "label": "Google Ruleset",
-                  "anchor": "ruleset=💬 Ai平台,https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/OpenAi.list",
+                  "anchor": "ruleset=💬 Ai平台",
                   "groups": [
                       "ruleset=🔍 Google,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Google/Google.list",
                   ],
+                  "occurrence": 2,
               },
               {
                   "label": "Telegram",
@@ -271,6 +277,7 @@ jobs:
                   ],
               },
           ]
+          matched_counts = {item["label"]: 0 for item in insertions}
           inserted = {item["label"]: False for item in insertions}
 
           with source.open("r", encoding="utf-8") as src, target.open("a", encoding="utf-8", newline="\n") as out:
@@ -278,13 +285,17 @@ jobs:
                   out.write(line)
                   for item in insertions:
                       label = item["label"]
-                      if inserted[label] or not line.startswith(item["anchor"]):
+                      if inserted[label]:
                           continue
-                      if not line.endswith("\n"):
-                          out.write("\n")
-                      for group in item["groups"]:
-                          out.write(group + "\n")
-                      inserted[label] = True
+                      if line.startswith(item["anchor"]):
+                          matched_counts[label] += 1
+                          target_occurrence = item.get("occurrence", 1)
+                          if matched_counts[label] == target_occurrence:
+                              if not line.endswith("\n"):
+                                  out.write("\n")
+                              for group in item["groups"]:
+                                  out.write(group + "\n")
+                              inserted[label] = True
 
           missing = [label for label, was_inserted in inserted.items() if not was_inserted]
           if missing:
@@ -300,7 +311,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
-          git add Egern/BlackMatrix7/Google.list Egern/mini/Google.list Egern/BlackMatrix7/Microsoft.list Egern/mini/Microsoft.list Clash/merged_config.ini
+          git add Egern/BlackMatrix7/Google.list Egern/Google.list Egern/BlackMatrix7/Microsoft.list Egern/Microsoft.list Clash/merged_config.ini
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
