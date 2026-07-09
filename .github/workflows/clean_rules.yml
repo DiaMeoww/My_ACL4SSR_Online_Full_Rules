@@ -24,7 +24,7 @@ jobs:
           import urllib.request
           from pathlib import Path
 
-          url = "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/QuantumultX/Google/Google.list"
+          url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/QuantumultX/Google/Google.list"
           youtube_keywords = ["youtube", "googlevideo", "ytimg", "ggpht", "youtube-nocookie"]
           
           # 1. 确保目标目录存在
@@ -52,71 +52,41 @@ jobs:
           upstream_path.write_text(raw_content, encoding="utf-8")
 
           # 5. 执行后续深度清洗逻辑，生成 mini/Google.list
-          from collections import Counter
-          valid_entries = []
-          all_main_domains = []
+          cleaned_rules = [
+              "# NAME: Google Clean Mini",
+              "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
+              "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules",
+              "# DESCRIPTION: Highly optimized mini Google ruleset (Keyword merged).",
+              "",
+              "HOST-KEYWORD,google,Google",
+              "HOST-KEYWORD,gmail,Google"
+          ]
+          seen = set(["google", "gmail"])
 
           for line in raw_content.splitlines():
               line_clean = line.strip()
               if not line_clean or line_clean.startswith("#") or line_clean.startswith(";"):
                   continue
+              
               parts = line_clean.split(",")
               if len(parts) < 2:
                   continue
               
-              rule_type = parts[0].strip().upper()
-              # 仅保留域名匹配规则 (HOST, HOST-SUFFIX, HOST-KEYWORD)
-              if rule_type not in ["HOST", "HOST-SUFFIX", "HOST-KEYWORD"]:
-                  continue
-                  
               domain = parts[1].strip().lower()
               
               # 排除含有油管关键字的冲突域名
               if any(kw in domain for kw in youtube_keywords):
                   continue
                   
-              # 提取主域名 (如 baselinestudy.org -> baselinestudy)
-              sub_parts = domain.split(".")
-              if len(sub_parts) >= 3 and sub_parts[-2] in ["com", "co", "net", "org", "gov", "edu"]:
-                  main_dom = sub_parts[-3]
-              elif len(sub_parts) >= 2:
-                  main_dom = sub_parts[-2]
-              else:
-                  main_dom = domain
-                  
-              valid_entries.append((line_clean, domain, main_dom))
-              all_main_domains.append(main_dom)
-
-          # 统计主域名频次，频次 >= 2 的提炼为 KEYWORD
-          main_dom_counts = Counter(all_main_domains)
-          auto_keywords = {dom for dom, count in main_dom_counts.items() if count >= 2 and len(dom) > 2}
-          must_keywords = {"google", "gmail", "chrome", "chromium", "android", "admob", "adsense", "adwords", "doubleclick", "firebase", "flutter", "gvt"}
-          all_keywords = auto_keywords.union(must_keywords)
-
-          cleaned_rules = [
-              "# NAME: Google Clean Mini",
-              "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
-              "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules",
-              "# DESCRIPTION: Highly optimized mini Google ruleset (Keyword merged).",
-              ""
-          ]
-          seen = set()
-
-          # 置顶写入所有的关键字大招
-          for kw in sorted(list(all_keywords)):
-              cleaned_rules.append(f"HOST-KEYWORD,{kw},Google")
-              seen.add(kw)
-
-          # 保存其余的非关键字匹配域名
-          for line_raw, domain, main_dom in valid_entries:
-              if any(kw in domain for kw in all_keywords):
+              # 如果域名本身包含了 google 或 gmail，则直接跳过，因为会被置顶的 KEYWORD 覆盖
+              if "google" in domain or "gmail" in domain:
                   continue
                   
               # 排除小国家 blogspot 后缀
               if "blogspot" in domain and not domain.endswith("blogspot.com"):
                   continue
                   
-              parts = line_raw.split(",")
+              # 保存其余核心直连或非google域名
               rule_type = parts[0].strip()
               policy = parts[2].strip() if len(parts) >= 3 else "Google"
               rule_entry = f"{rule_type},{domain},{policy}"
