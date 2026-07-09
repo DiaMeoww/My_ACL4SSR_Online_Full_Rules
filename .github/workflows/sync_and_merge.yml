@@ -76,7 +76,7 @@ jobs:
               google_clean = [
                   "# NAME: Google Clean Mini",
                   "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
-                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/Egern/Google.list",
+                  "# REPO: https://github.com/DiaMeoww/Proxy_Rules/blob/main/Egern/Google.list",
                   "",
                   "DOMAIN-KEYWORD,google",
                   "DOMAIN-KEYWORD,gmail",
@@ -145,7 +145,7 @@ jobs:
               ms_clean = [
                   "# NAME: Microsoft Clean Mini",
                   "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
-                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/Egern/Microsoft.list",
+                  "# REPO: https://github.com/DiaMeoww/Proxy_Rules/blob/main/Egern/Microsoft.list",
                   "",
                   "DOMAIN-KEYWORD,microsoft",
                   "DOMAIN-KEYWORD,windows",
