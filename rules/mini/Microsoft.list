@@ -416,3 +416,6 @@ HOST-SUFFIX,sharepointonline.com,Microsoft
 HOST-SUFFIX,spoprod-a.akamaihd.net,Microsoft
 HOST-KEYWORD,1drv,Microsoft
 HOST-KEYWORD,skydrive,Microsoft
+USER-AGENT,Microsoft*,Microsoft
+USER-AGENT,OneDrive*,Microsoft
+USER-AGENT,OneDriveiOSApp*,Microsoft
