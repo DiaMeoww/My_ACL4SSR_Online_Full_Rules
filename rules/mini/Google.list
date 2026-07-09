@@ -1,7 +1,6 @@
 # NAME: Google Clean Mini
 # AUTHOR: blackmatrix7 & Antigravity Clean Bot
-# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules
-# DESCRIPTION: Highly optimized mini Google ruleset (Keyword merged).
+# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/rules/mini/Google.list
 
 HOST-KEYWORD,google,Google
 HOST-KEYWORD,gmail,Google
