@@ -18,7 +18,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Fetch, Compare and Clean Google Rules
+      - name: Fetch, Compare and Clean Rules
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
@@ -27,91 +27,153 @@ jobs:
           from pathlib import Path
           import os
 
-          url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/QuantumultX/Google/Google.list"
-          youtube_keywords = ["youtube", "googlevideo", "ytimg", "ggpht", "youtube-nocookie"]
           event_name = os.environ.get("GITHUB_EVENT_NAME", "manual")
           
           # 1. 确保目标目录存在
           Path("rules/BlackMatrix7").mkdir(parents=True, exist_ok=True)
           Path("rules/mini").mkdir(parents=True, exist_ok=True)
 
-          # 2. 下载最新的官方原版
+          # ----------------- 处理 Google -----------------
+          google_url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/QuantumultX/Google/Google.list"
+          youtube_keywords = ["youtube", "googlevideo", "ytimg", "ggpht", "youtube-nocookie"]
+          
           try:
-              req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+              req = urllib.request.Request(google_url, headers={'User-Agent': 'Mozilla/5.0'})
               with urllib.request.urlopen(req) as response:
-                  raw_content = response.read().decode('utf-8')
+                  google_raw = response.read().decode('utf-8')
           except Exception as e:
-              print(f"Error fetching rules: {e}")
+              print(f"Error fetching Google rules: {e}")
               raise SystemExit(1)
 
-          # 3. 对比原版是否变动
-          upstream_path = Path("rules/BlackMatrix7/Google.list")
-          if event_name == "schedule" and upstream_path.exists():
-              old_content = upstream_path.read_text(encoding="utf-8")
-              if old_content.strip() == raw_content.strip():
-                  print("No changes in upstream BlackMatrix7 Google.list. Exiting.")
-                  raise SystemExit(0)
+          google_upstream = Path("rules/BlackMatrix7/Google.list")
+          google_changed = True
+          if event_name == "schedule" and google_upstream.exists():
+              if google_upstream.read_text(encoding="utf-8").strip() == google_raw.strip():
+                  google_changed = False
+                  print("No changes in upstream Google.list.")
 
-          # 4. 如果发生变动，保存最新的原版
-          upstream_path.write_text(raw_content, encoding="utf-8")
+          if google_changed:
+              google_upstream.write_text(google_raw, encoding="utf-8")
+              google_clean = [
+                  "# NAME: Google Clean Mini",
+                  "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
+                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/rules/mini/Google.list",
+                  "",
+                  "HOST-KEYWORD,google,Google",
+                  "HOST-KEYWORD,gmail,Google"
+              ]
+              seen = set(["google", "gmail"])
+              for line in google_raw.splitlines():
+                  line_clean = line.strip()
+                  if not line_clean or line_clean.startswith("#") or line_clean.startswith(";"):
+                      continue
+                  parts = line_clean.split(",")
+                  if len(parts) < 2:
+                      continue
+                  domain = parts[1].strip().lower()
+                  if any(kw in domain for kw in youtube_keywords):
+                      continue
+                  if "google" in domain or "gmail" in domain:
+                      continue
+                  if "blogspot" in domain and not domain.endswith("blogspot.com"):
+                      continue
+                  rule_type = parts[0].strip()
+                  policy = parts[2].strip() if len(parts) >= 3 else "Google"
+                  rule_entry = f"{rule_type},{domain},{policy}"
+                  if rule_entry not in seen:
+                      seen.add(rule_entry)
+                      google_clean.append(rule_entry)
+              Path("rules/mini/Google.list").write_text("\n".join(google_clean) + "\n", encoding="utf-8")
+              print("Google rules updated and compiled.")
 
-          # 5. 执行后续深度清洗逻辑，生成 mini/Google.list
-          cleaned_rules = [
-              "# NAME: Google Clean Mini",
-              "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
-              "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/rules/mini/Google.list",
-              "",
-              "HOST-KEYWORD,google,Google",
-              "HOST-KEYWORD,gmail,Google"
-          ]
-          seen = set(["google", "gmail"])
+          # ----------------- 处理 Microsoft -----------------
+          ms_url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/QuantumultX/Microsoft/Microsoft.list"
+          
+          try:
+              req = urllib.request.Request(ms_url, headers={'User-Agent': 'Mozilla/5.0'})
+              with urllib.request.urlopen(req) as response:
+                  ms_raw = response.read().decode('utf-8')
+          except Exception as e:
+              print(f"Error fetching Microsoft rules: {e}")
+              raise SystemExit(1)
 
-          for line in raw_content.splitlines():
-              line_clean = line.strip()
-              if not line_clean or line_clean.startswith("#") or line_clean.startswith(";"):
-                  continue
+          ms_upstream = Path("rules/BlackMatrix7/Microsoft.list")
+          ms_changed = True
+          if event_name == "schedule" and ms_upstream.exists():
+              if ms_upstream.read_text(encoding="utf-8").strip() == ms_raw.strip():
+                  ms_changed = False
+                  print("No changes in upstream Microsoft.list.")
+
+          if ms_changed:
+              ms_upstream.write_text(ms_raw, encoding="utf-8")
+              ms_clean = [
+                  "# NAME: Microsoft Clean Mini",
+                  "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
+                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/rules/mini/Microsoft.list",
+                  "",
+                  "HOST-KEYWORD,microsoft,Microsoft",
+                  "HOST-KEYWORD,windows,Microsoft",
+                  "HOST-KEYWORD,office,Microsoft",
+                  "HOST-KEYWORD,outlook,Microsoft",
+                  "HOST-KEYWORD,bing,Microsoft",
+                  "HOST-KEYWORD,xbox,Microsoft",
+                  "HOST-KEYWORD,skype,Microsoft",
+                  "HOST-KEYWORD,azure,Microsoft",
+                  "HOST-KEYWORD,visualstudio,Microsoft",
+                  "HOST-KEYWORD,onedrive,Microsoft",
+                  "HOST-KEYWORD,hotmail,Microsoft",
+                  "HOST-KEYWORD,live,Microsoft",
+                  "HOST-KEYWORD,21vbluecloud,Microsoft",
+                  "HOST-SUFFIX,msn.com,Microsoft",
+                  "HOST-SUFFIX,msn.cn,Microsoft",
+                  "HOST-SUFFIX,msn.net,Microsoft",
+                  "HOST-SUFFIX,ms,Microsoft"
+              ]
+              ms_keywords = ["microsoft", "windows", "office", "outlook", "bing", "xbox", "skype", "azure", "visualstudio", "onedrive", "hotmail", "live", "21vbluecloud"]
+              ms_suffixes = ["msn.com", "msn.cn", "msn.net"]
+              seen = set(ms_keywords + ms_suffixes + ["ms"])
               
-              parts = line_clean.split(",")
-              if len(parts) < 2:
-                  continue
-              
-              domain = parts[1].strip().lower()
-              
-              # 排除含有油管关键字的冲突域名
-              if any(kw in domain for kw in youtube_keywords):
-                  continue
+              for line in ms_raw.splitlines():
+                  line_clean = line.strip()
+                  if not line_clean or line_clean.startswith("#") or line_clean.startswith(";"):
+                      continue
+                  parts = line_clean.split(",")
+                  if len(parts) < 2:
+                      continue
+                  domain = parts[1].strip().lower()
                   
-              # 如果域名本身包含了 google 或 gmail，则直接跳过，因为会被置顶的 KEYWORD 覆盖
-              if "google" in domain or "gmail" in domain:
-                  continue
-                  
-              # 排除小国家 blogspot 后缀
-              if "blogspot" in domain and not domain.endswith("blogspot.com"):
-                  continue
-                  
-              # 保存其余核心直连或非google域名
-              rule_type = parts[0].strip()
-              policy = parts[2].strip() if len(parts) >= 3 else "Google"
-              rule_entry = f"{rule_type},{domain},{policy}"
-              if rule_entry not in seen:
-                  seen.add(rule_entry)
-                  cleaned_rules.append(rule_entry)
-
-          Path("rules/mini/Google.list").write_text("\n".join(cleaned_rules) + "\n", encoding="utf-8")
-          print(f"Upstream updated! Cleaned Google rules compiled into rules/mini/Google.list. Total non-keyword entries: {len(seen) - 2}")
+                  if any(kw in domain for kw in ms_keywords):
+                      continue
+                  if any(domain.endswith(sfx) or domain == sfx for sfx in ms_suffixes):
+                      continue
+                  if domain.endswith(".ms") or domain == "ms":
+                      continue
+                      
+                  rule_type = parts[0].strip()
+                  policy = parts[2].strip() if len(parts) >= 3 else "Microsoft"
+                  rule_entry = f"{rule_type},{domain},{policy}"
+                  if rule_entry not in seen:
+                      seen.add(rule_entry)
+                      ms_clean.append(rule_entry)
+              Path("rules/mini/Microsoft.list").write_text("\n".join(ms_clean) + "\n", encoding="utf-8")
+              print("Microsoft rules updated and compiled.")
+          
+          if not google_changed and not ms_changed:
+              print("All rulesets are up-to-date. Exiting workflow.")
+              raise SystemExit(0)
           PY
 
       - name: Git Push Changes
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
-          git add rules/BlackMatrix7/Google.list rules/mini/Google.list
+          git add rules/BlackMatrix7/Google.list rules/mini/Google.list rules/BlackMatrix7/Microsoft.list rules/mini/Microsoft.list
           if [ -f "rules/google_clean.list" ]; then
             git rm -f rules/google_clean.list || true
           fi
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: update upstream and compile mini Google ruleset $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M') 喵~"
+            git commit -m "chore: auto-sync and compile mini Google & Microsoft rulesets $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M') 喵~"
             git push
           fi
