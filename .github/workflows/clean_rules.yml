@@ -63,7 +63,16 @@ jobs:
                   "HOST-KEYWORD,gmail,Google",
                   "HOST-KEYWORD,blogspot,Google"
               ]
-              seen = set(["google", "gmail", "blogspot"])
+              google_keywords = ["google", "gmail", "blogspot"]
+              
+              seen = set()
+              for line in google_clean:
+                  line_strip = line.strip()
+                  if line_strip and not line_strip.startswith("#"):
+                      parts = line_strip.split(",")
+                      if len(parts) >= 2:
+                          seen.add(line_strip.lower())
+
               for line in google_raw.splitlines():
                   line_clean = line.strip()
                   if not line_clean or line_clean.startswith("#") or line_clean.startswith(";"):
@@ -71,18 +80,21 @@ jobs:
                   parts = line_clean.split(",")
                   if len(parts) < 2:
                       continue
-                  domain = parts[1].strip().lower()
-                  if any(kw in domain for kw in youtube_keywords):
-                      continue
-                  if "google" in domain or "gmail" in domain:
-                      continue
-                  if "blogspot" in domain:
-                      continue
                   rule_type = parts[0].strip()
+                  domain = parts[1].strip()
+                  domain_lower = domain.lower()
                   policy = parts[2].strip() if len(parts) >= 3 else "Google"
+                  
+                  if rule_type.startswith("HOST"):
+                      if any(kw in domain_lower for kw in youtube_keywords):
+                          continue
+                      if any(kw in domain_lower for kw in google_keywords):
+                          continue
+                          
                   rule_entry = f"{rule_type},{domain},{policy}"
-                  if rule_entry not in seen:
-                      seen.add(rule_entry)
+                  rule_entry_lower = rule_entry.lower()
+                  if rule_entry_lower not in seen:
+                      seen.add(rule_entry_lower)
                       google_clean.append(rule_entry)
               Path("rules/mini/Google.list").write_text("\n".join(google_clean) + "\n", encoding="utf-8")
               print("Google rules updated and compiled.")
@@ -136,7 +148,14 @@ jobs:
               ]
               ms_keywords = ["microsoft", "windows", "outlook", "xbox", "skype", "azure", "visualstudio", "onedrive", "hotmail", "21vbluecloud"]
               ms_suffixes = ["msn.com", "msn.cn", "msn.net", "office.com", "office.net", "bing.com", "bing.net", "bing.com.cn", "live.com", "live.net", "live.cn"]
-              seen = set(ms_keywords + ms_suffixes)
+              
+              seen = set()
+              for line in ms_clean:
+                  line_strip = line.strip()
+                  if line_strip and not line_strip.startswith("#"):
+                      parts = line_strip.split(",")
+                      if len(parts) >= 2:
+                          seen.add(line_strip.lower())
               
               for line in ms_raw.splitlines():
                   line_clean = line.strip()
@@ -145,18 +164,21 @@ jobs:
                   parts = line_clean.split(",")
                   if len(parts) < 2:
                       continue
-                  domain = parts[1].strip().lower()
-                  
-                  if any(kw in domain for kw in ms_keywords):
-                      continue
-                  if any(domain == sfx or domain.endswith("." + sfx) for sfx in ms_suffixes):
-                      continue
-                      
                   rule_type = parts[0].strip()
+                  domain = parts[1].strip()
+                  domain_lower = domain.lower()
                   policy = parts[2].strip() if len(parts) >= 3 else "Microsoft"
+                  
+                  if rule_type.startswith("HOST"):
+                      if any(kw in domain_lower for kw in ms_keywords):
+                          continue
+                      if any(domain_lower == sfx or domain_lower.endswith("." + sfx) for sfx in ms_suffixes):
+                          continue
+                      
                   rule_entry = f"{rule_type},{domain},{policy}"
-                  if rule_entry not in seen:
-                      seen.add(rule_entry)
+                  rule_entry_lower = rule_entry.lower()
+                  if rule_entry_lower not in seen:
+                      seen.add(rule_entry_lower)
                       ms_clean.append(rule_entry)
               Path("rules/mini/Microsoft.list").write_text("\n".join(ms_clean) + "\n", encoding="utf-8")
               print("Microsoft rules updated and compiled.")
