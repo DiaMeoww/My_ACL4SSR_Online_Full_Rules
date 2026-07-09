@@ -2,7 +2,7 @@ name: Auto Clean and Sync Rules
 
 on:
   schedule:
-    - cron: "30 22 * * *"     # 每天北京时间 06:30 执行
+    - cron: "0 22 * * *"     # 每天北京时间 06:00 执行
   workflow_dispatch: 
   push:
     paths:
