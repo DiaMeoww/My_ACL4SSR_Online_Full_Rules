@@ -34,7 +34,7 @@ jobs:
           Path("rules/mini").mkdir(parents=True, exist_ok=True)
 
           # ----------------- 处理 Google -----------------
-          google_url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/QuantumultX/Google/Google.list"
+          google_url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Google/Google.list"
           youtube_keywords = ["youtube", "googlevideo", "ytimg", "ggpht", "youtube-nocookie"]
           
           try:
@@ -46,8 +46,9 @@ jobs:
               raise SystemExit(1)
 
           google_upstream = Path("rules/BlackMatrix7/Google.list")
+          google_mini = Path("rules/mini/Google.list")
           google_changed = True
-          if event_name == "schedule" and google_upstream.exists():
+          if event_name == "schedule" and google_upstream.exists() and google_mini.exists():
               if google_upstream.read_text(encoding="utf-8").strip() == google_raw.strip():
                   google_changed = False
                   print("No changes in upstream Google.list.")
@@ -59,9 +60,9 @@ jobs:
                   "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
                   "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/rules/mini/Google.list",
                   "",
-                  "HOST-KEYWORD,google,Google",
-                  "HOST-KEYWORD,gmail,Google",
-                  "HOST-KEYWORD,blogspot,Google"
+                  "DOMAIN-KEYWORD,google",
+                  "DOMAIN-KEYWORD,gmail",
+                  "DOMAIN-KEYWORD,blogspot"
               ]
               google_keywords = ["google", "gmail", "blogspot"]
               
@@ -80,18 +81,23 @@ jobs:
                   parts = line_clean.split(",")
                   if len(parts) < 2:
                       continue
-                  rule_type = parts[0].strip()
-                  domain = parts[1].strip()
+                  parts = [p.strip() for p in parts]
+                  rule_type = parts[0]
+                  domain = parts[1]
                   domain_lower = domain.lower()
-                  policy = parts[2].strip() if len(parts) >= 3 else "Google"
+                  extra = ",".join(parts[2:]) if len(parts) >= 3 else ""
                   
-                  if rule_type.startswith("HOST"):
+                  if rule_type.startswith("DOMAIN"):
                       if any(kw in domain_lower for kw in youtube_keywords):
                           continue
                       if any(kw in domain_lower for kw in google_keywords):
                           continue
                           
-                  rule_entry = f"{rule_type},{domain},{policy}"
+                  if extra:
+                      rule_entry = f"{rule_type},{domain},{extra}"
+                  else:
+                      rule_entry = f"{rule_type},{domain}"
+                  
                   rule_entry_lower = rule_entry.lower()
                   if rule_entry_lower not in seen:
                       seen.add(rule_entry_lower)
@@ -100,7 +106,7 @@ jobs:
               print("Google rules updated and compiled.")
 
           # ----------------- 处理 Microsoft -----------------
-          ms_url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/QuantumultX/Microsoft/Microsoft.list"
+          ms_url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list"
           
           try:
               req = urllib.request.Request(ms_url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -111,8 +117,9 @@ jobs:
               raise SystemExit(1)
 
           ms_upstream = Path("rules/BlackMatrix7/Microsoft.list")
+          ms_mini = Path("rules/mini/Microsoft.list")
           ms_changed = True
-          if event_name == "schedule" and ms_upstream.exists():
+          if event_name == "schedule" and ms_upstream.exists() and ms_mini.exists():
               if ms_upstream.read_text(encoding="utf-8").strip() == ms_raw.strip():
                   ms_changed = False
                   print("No changes in upstream Microsoft.list.")
@@ -124,27 +131,27 @@ jobs:
                   "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
                   "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/rules/mini/Microsoft.list",
                   "",
-                  "HOST-KEYWORD,microsoft,Microsoft",
-                  "HOST-KEYWORD,windows,Microsoft",
-                  "HOST-SUFFIX,office.com,Microsoft",
-                  "HOST-SUFFIX,office.net,Microsoft",
-                  "HOST-KEYWORD,outlook,Microsoft",
-                  "HOST-SUFFIX,bing.com,Microsoft",
-                  "HOST-SUFFIX,bing.net,Microsoft",
-                  "HOST-SUFFIX,bing.com.cn,Microsoft",
-                  "HOST-KEYWORD,xbox,Microsoft",
-                  "HOST-KEYWORD,skype,Microsoft",
-                  "HOST-KEYWORD,azure,Microsoft",
-                  "HOST-KEYWORD,visualstudio,Microsoft",
-                  "HOST-KEYWORD,onedrive,Microsoft",
-                  "HOST-KEYWORD,hotmail,Microsoft",
-                  "HOST-SUFFIX,live.com,Microsoft",
-                  "HOST-SUFFIX,live.net,Microsoft",
-                  "HOST-SUFFIX,live.cn,Microsoft",
-                  "HOST-KEYWORD,21vbluecloud,Microsoft",
-                  "HOST-SUFFIX,msn.com,Microsoft",
-                  "HOST-SUFFIX,msn.cn,Microsoft",
-                  "HOST-SUFFIX,msn.net,Microsoft"
+                  "DOMAIN-KEYWORD,microsoft",
+                  "DOMAIN-KEYWORD,windows",
+                  "DOMAIN-SUFFIX,office.com",
+                  "DOMAIN-SUFFIX,office.net",
+                  "DOMAIN-KEYWORD,outlook",
+                  "DOMAIN-SUFFIX,bing.com",
+                  "DOMAIN-SUFFIX,bing.net",
+                  "DOMAIN-SUFFIX,bing.com.cn",
+                  "DOMAIN-KEYWORD,xbox",
+                  "DOMAIN-KEYWORD,skype",
+                  "DOMAIN-KEYWORD,azure",
+                  "DOMAIN-KEYWORD,visualstudio",
+                  "DOMAIN-KEYWORD,onedrive",
+                  "DOMAIN-KEYWORD,hotmail",
+                  "DOMAIN-SUFFIX,live.com",
+                  "DOMAIN-SUFFIX,live.net",
+                  "DOMAIN-SUFFIX,live.cn",
+                  "DOMAIN-KEYWORD,21vbluecloud",
+                  "DOMAIN-SUFFIX,msn.com",
+                  "DOMAIN-SUFFIX,msn.cn",
+                  "DOMAIN-SUFFIX,msn.net"
               ]
               ms_keywords = ["microsoft", "windows", "outlook", "xbox", "skype", "azure", "visualstudio", "onedrive", "hotmail", "21vbluecloud"]
               ms_suffixes = ["msn.com", "msn.cn", "msn.net", "office.com", "office.net", "bing.com", "bing.net", "bing.com.cn", "live.com", "live.net", "live.cn"]
@@ -164,18 +171,23 @@ jobs:
                   parts = line_clean.split(",")
                   if len(parts) < 2:
                       continue
-                  rule_type = parts[0].strip()
-                  domain = parts[1].strip()
+                  parts = [p.strip() for p in parts]
+                  rule_type = parts[0]
+                  domain = parts[1]
                   domain_lower = domain.lower()
-                  policy = parts[2].strip() if len(parts) >= 3 else "Microsoft"
+                  extra = ",".join(parts[2:]) if len(parts) >= 3 else ""
                   
-                  if rule_type.startswith("HOST"):
+                  if rule_type.startswith("DOMAIN"):
                       if any(kw in domain_lower for kw in ms_keywords):
                           continue
                       if any(domain_lower == sfx or domain_lower.endswith("." + sfx) for sfx in ms_suffixes):
                           continue
                       
-                  rule_entry = f"{rule_type},{domain},{policy}"
+                  if extra:
+                      rule_entry = f"{rule_type},{domain},{extra}"
+                  else:
+                      rule_entry = f"{rule_type},{domain}"
+                  
                   rule_entry_lower = rule_entry.lower()
                   if rule_entry_lower not in seen:
                       seen.add(rule_entry_lower)
