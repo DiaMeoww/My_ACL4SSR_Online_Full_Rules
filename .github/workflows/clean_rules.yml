@@ -60,9 +60,10 @@ jobs:
                   "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/rules/mini/Google.list",
                   "",
                   "HOST-KEYWORD,google,Google",
-                  "HOST-KEYWORD,gmail,Google"
+                  "HOST-KEYWORD,gmail,Google",
+                  "HOST-KEYWORD,blogspot,Google"
               ]
-              seen = set(["google", "gmail"])
+              seen = set(["google", "gmail", "blogspot"])
               for line in google_raw.splitlines():
                   line_clean = line.strip()
                   if not line_clean or line_clean.startswith("#") or line_clean.startswith(";"):
@@ -75,7 +76,7 @@ jobs:
                       continue
                   if "google" in domain or "gmail" in domain:
                       continue
-                  if "blogspot" in domain and not domain.endswith("blogspot.com"):
+                  if "blogspot" in domain:
                       continue
                   rule_type = parts[0].strip()
                   policy = parts[2].strip() if len(parts) >= 3 else "Google"
@@ -131,12 +132,11 @@ jobs:
                   "HOST-KEYWORD,21vbluecloud,Microsoft",
                   "HOST-SUFFIX,msn.com,Microsoft",
                   "HOST-SUFFIX,msn.cn,Microsoft",
-                  "HOST-SUFFIX,msn.net,Microsoft",
-                  "HOST-SUFFIX,ms,Microsoft"
+                  "HOST-SUFFIX,msn.net,Microsoft"
               ]
               ms_keywords = ["microsoft", "windows", "outlook", "xbox", "skype", "azure", "visualstudio", "onedrive", "hotmail", "21vbluecloud"]
               ms_suffixes = ["msn.com", "msn.cn", "msn.net", "office.com", "office.net", "bing.com", "bing.net", "bing.com.cn", "live.com", "live.net", "live.cn"]
-              seen = set(ms_keywords + ms_suffixes + ["ms"])
+              seen = set(ms_keywords + ms_suffixes)
               
               for line in ms_raw.splitlines():
                   line_clean = line.strip()
@@ -149,9 +149,7 @@ jobs:
                   
                   if any(kw in domain for kw in ms_keywords):
                       continue
-                  if any(domain.endswith(sfx) or domain == sfx for sfx in ms_suffixes):
-                      continue
-                  if domain.endswith(".ms") or domain == "ms":
+                  if any(domain == sfx or domain.endswith("." + sfx) for sfx in ms_suffixes):
                       continue
                       
                   rule_type = parts[0].strip()

@@ -4,6 +4,7 @@
 
 HOST-KEYWORD,google,Google
 HOST-KEYWORD,gmail,Google
+HOST-KEYWORD,blogspot,Google
 HOST,crl.pki.goog,Google
 HOST,fonts.gstatic.com,Google
 HOST,ocsp.pki.goog,Google
@@ -63,7 +64,6 @@ HOST-SUFFIX,beatthatquote.com,Google
 HOST-SUFFIX,blink.org,Google
 HOST-SUFFIX,blogblog.com,Google
 HOST-SUFFIX,blogger.com,Google
-HOST-SUFFIX,blogspot.com,Google
 HOST-SUFFIX,brocaproject.com,Google
 HOST-SUFFIX,brotli.org,Google
 HOST-SUFFIX,bumpshare.com,Google
