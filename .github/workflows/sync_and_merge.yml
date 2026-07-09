@@ -35,8 +35,8 @@ jobs:
           event_name = os.environ.get("GITHUB_EVENT_NAME", "manual")
           
           # 1. 确保目标目录存在
-          Path("egern/upstream").mkdir(parents=True, exist_ok=True)
-          Path("egern/mini").mkdir(parents=True, exist_ok=True)
+          Path("Egern/BlackMatrix7").mkdir(parents=True, exist_ok=True)
+          Path("Egern/mini").mkdir(parents=True, exist_ok=True)
 
           # ----------------- 处理 Google -----------------
           google_url = "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Google/Google.list"
@@ -50,8 +50,8 @@ jobs:
               print(f"Error fetching Google rules: {e}")
               raise SystemExit(1)
 
-          google_upstream = Path("egern/upstream/Google.list")
-          google_mini = Path("egern/mini/Google.list")
+          google_upstream = Path("Egern/BlackMatrix7/Google.list")
+          google_mini = Path("Egern/mini/Google.list")
           google_changed = True
           if event_name == "schedule" and google_upstream.exists() and google_mini.exists():
               if google_upstream.read_text(encoding="utf-8").strip() == google_raw.strip():
@@ -63,7 +63,7 @@ jobs:
               google_clean = [
                   "# NAME: Google Clean Mini",
                   "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
-                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/egern/mini/Google.list",
+                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/Egern/mini/Google.list",
                   "",
                   "DOMAIN-KEYWORD,google",
                   "DOMAIN-KEYWORD,gmail",
@@ -107,7 +107,7 @@ jobs:
                   if rule_entry_lower not in seen:
                       seen.add(rule_entry_lower)
                       google_clean.append(rule_entry)
-              Path("egern/mini/Google.list").write_text("\n".join(google_clean) + "\n", encoding="utf-8")
+              Path("Egern/mini/Google.list").write_text("\n".join(google_clean) + "\n", encoding="utf-8")
               print("Google rules updated and compiled.")
 
           # ----------------- 处理 Microsoft -----------------
@@ -121,8 +121,8 @@ jobs:
               print(f"Error fetching Microsoft rules: {e}")
               raise SystemExit(1)
 
-          ms_upstream = Path("egern/upstream/Microsoft.list")
-          ms_mini = Path("egern/mini/Microsoft.list")
+          ms_upstream = Path("Egern/BlackMatrix7/Microsoft.list")
+          ms_mini = Path("Egern/mini/Microsoft.list")
           ms_changed = True
           if event_name == "schedule" and ms_upstream.exists() and ms_mini.exists():
               if ms_upstream.read_text(encoding="utf-8").strip() == ms_raw.strip():
@@ -134,7 +134,7 @@ jobs:
               ms_clean = [
                   "# NAME: Microsoft Clean Mini",
                   "# AUTHOR: blackmatrix7 & Antigravity Clean Bot",
-                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/egern/mini/Microsoft.list",
+                  "# REPO: https://github.com/DiaMeoww/My_ACL4SSR_Online_Full_Rules/blob/main/Egern/mini/Microsoft.list",
                   "",
                   "DOMAIN-KEYWORD,microsoft",
                   "DOMAIN-KEYWORD,windows",
@@ -197,7 +197,7 @@ jobs:
                   if rule_entry_lower not in seen:
                       seen.add(rule_entry_lower)
                       ms_clean.append(rule_entry)
-              Path("egern/mini/Microsoft.list").write_text("\n".join(ms_clean) + "\n", encoding="utf-8")
+              Path("Egern/mini/Microsoft.list").write_text("\n".join(ms_clean) + "\n", encoding="utf-8")
               print("Microsoft rules updated and compiled.")
           
           if not google_changed and not ms_changed:
@@ -212,21 +212,22 @@ jobs:
       - name: Merge ACL4SSR Config
         run: |
           # 1. 直接把主人的 my_rules.ini 作为基础文件（保留所有 [rule] [custom] 标签）
+          mkdir -p Clash
           if [ -f "my_rules.ini" ]; then
-            cat my_rules.ini > ACL4SSR_Custom.ini
-            echo -e "" >> ACL4SSR_Custom.ini
+            cat my_rules.ini > Clash/merged_config.ini
+            echo -e "" >> Clash/merged_config.ini
           else
-            touch ACL4SSR_Custom.ini
+            touch Clash/merged_config.ini
           fi
           
           # 2. 拼接原始 ACL4SSR 规则区，并插入自定义分组
-          echo "; --- 原始 ACL4SSR 规则区 ---" >> ACL4SSR_Custom.ini
+          echo "; --- 原始 ACL4SSR 规则区 ---" >> Clash/merged_config.ini
           if [ -f "acl4ssr.ini" ]; then
             python3 - <<'PY'
           from pathlib import Path
 
           source = Path("acl4ssr.ini")
-          target = Path("ACL4SSR_Custom.ini")
+          target = Path("Clash/merged_config.ini")
           insertions = [
               {
                   "label": "Google Ruleset",
@@ -285,7 +286,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
-          git add egern/upstream/Google.list egern/mini/Google.list egern/upstream/Microsoft.list egern/mini/Microsoft.list ACL4SSR_Custom.ini
+          git add Egern/BlackMatrix7/Google.list Egern/mini/Google.list Egern/BlackMatrix7/Microsoft.list Egern/mini/Microsoft.list Clash/merged_config.ini
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
